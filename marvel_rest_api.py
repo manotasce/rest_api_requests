@@ -49,6 +49,20 @@ class MarvelAPI():
             # Return JSON payload
             return response.json()
 
+    def get_character_by_name(self,character_name, request_limit=2):
+        self.baseURL = "%s/%s" % (self.baseURL, "characters")
+        try:
+            self.url_params['limit']=request_limit
+            self.url_params['name']=character_name
+            response = requests.get(self.baseURL, params=self.url_params)
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print(f'HTTP error: {http_err}')
+        except Exception as err:
+            print(f'Generic exception : {err}')
+        else:
+            return  json.dumps(response.json(), indent=4)
+
     def save_characters_data(self, outfile, request_limit=20, request_offset=0):
         json_characters = self.get_characters(request_limit=request_limit,
                                               request_offset=request_offset)
@@ -62,3 +76,6 @@ if __name__ == '__main__':
     """
     marvel_api = MarvelAPI()
     marvel_api.save_characters_data('characters.json')
+    marvel_api = MarvelAPI()
+    character_data = marvel_api.get_character_by_name('Anole')
+    print(character_data)
